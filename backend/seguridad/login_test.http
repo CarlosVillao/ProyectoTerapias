@@ -1,0 +1,45 @@
+### LOGIN
+POST http://localhost:8000/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@admin.com",
+  "password": "123456"
+}
+
+### SELECCIONAR ROL
+POST http://localhost:8000/auth/seleccionar-rol
+Content-Type: application/json
+
+{
+  "user_id": 1,
+  "rol_id": 1
+}
+
+### CAMBIAR CONTRASEÑA
+POST http://localhost:8000/auth/cambiar-password
+Content-Type: application/json
+
+{
+  "user_id": 1,
+  "old_password": "123456",
+  "new_password": "12345678"
+}
+
+### RECUPERAR CONTRASEÑA (GENERAR TOKEN)
+POST http://localhost:8000/auth/recuperar-password
+Content-Type: application/json
+
+{
+  "email": "admin@admin.com"
+}
+
+### RESETEAR CONTRASEÑA CON TOKEN
+POST http://localhost:8000/auth/resetear-password
+Content-Type: application/json
+
+{
+  "email": "admin@admin.com",
+  "token": "123456",
+  "new_password": "nuevo123"
+}
