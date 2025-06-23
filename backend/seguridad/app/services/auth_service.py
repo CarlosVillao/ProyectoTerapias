@@ -25,7 +25,6 @@ def login_user(email: str, password: str):
         print("Password de la base:",user['user_password'])
 
         # Temporalmente, puedes descomentar la línea de abajo para comparar sin hash
-        #if password != user['user_password']:
         if not verify_password(password, user['user_password']):
             print("❌ Contraseña incorrecta.")
             raise HTTPException(status_code=401, detail="Credenciales inválidas")
