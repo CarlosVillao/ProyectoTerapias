@@ -15,6 +15,7 @@ class LoginResponse(BaseModel):
     token: str
     user_id: int
     rol_id: int
+    login_id: int
     message: str
 
 # app/schemas/auth_schema.py (complemento)

@@ -61,6 +61,25 @@ def login_user(email: str, password: str):
             conn.close()
 
 
+#def seleccionar_rol_activo(user_id: int, rol_id: int, origin_ip: str, host_name: str):
+    #conn = get_connection()
+    #cur = conn.cursor()
+
+    #cur.execute("""
+    #    INSERT INTO ceragen.segu_login (
+    #        slo_user_id, slo_token, slo_origin_ip, slo_host_name, slo_date_start_connection
+    #    ) VALUES (%s, '', %s, %s, now()) RETURNING slo_id
+    #""", (user_id, origin_ip, host_name))
+    #login_id = cur.fetchone()[0]
+
+    #token = create_access_token({"user_id": user_id, "rol_id": rol_id, "login_id": login_id})
+
+    #cur.execute("UPDATE ceragen.segu_login SET slo_token = %s WHERE slo_id = %s", (token, login_id))
+    #conn.commit()
+    #conn.close()
+
+    #return token
+
 def seleccionar_rol_activo(user_id: int, rol_id: int, origin_ip: str, host_name: str):
     conn = get_connection()
     cur = conn.cursor()
@@ -72,13 +91,17 @@ def seleccionar_rol_activo(user_id: int, rol_id: int, origin_ip: str, host_name:
     """, (user_id, origin_ip, host_name))
     login_id = cur.fetchone()[0]
 
+    # Generar token
     token = create_access_token({"user_id": user_id, "rol_id": rol_id, "login_id": login_id})
 
+    # Actualizar token
     cur.execute("UPDATE ceragen.segu_login SET slo_token = %s WHERE slo_id = %s", (token, login_id))
     conn.commit()
     conn.close()
 
-    return token
+    # 🚨 Devolver también el login_id
+    return token, login_id
+
 
 
 def cambiar_contrasena(user_id: int, old_password: str, new_password: str):

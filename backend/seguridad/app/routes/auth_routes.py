@@ -38,11 +38,12 @@ def seleccionar_rol(data: RoleSelectionRequest, request: Request):
     ip = request.client.host
     host = request.headers.get("host", "unknown")
     print(f"📌 Seleccionar rol - IP: {ip}, Host: {host}")
-    token = seleccionar_rol_activo(data.user_id, data.rol_id, ip, host)
+    token, login_id = seleccionar_rol_activo(data.user_id, data.rol_id, ip, host)
     return LoginResponse(
         token=token,
         user_id=data.user_id,
         rol_id=data.rol_id,
+        login_id=login_id,
         message="Inicio de sesión exitoso"
     )
 
