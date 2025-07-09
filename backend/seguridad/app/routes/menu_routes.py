@@ -1,19 +1,37 @@
-# app/routes/menu_routes.py
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from app.services.menu_service import listar_menus_por_rol
-from app.utils.jwt_handler import decode_token
-from fastapi import Header, HTTPException
+from app.services.rol_service import listar_roles  # Para obtener nombre de rol
+from app.utils.auth_dependency import obtener_usuario_desde_token
+from fastapi.responses import JSONResponse
 
-router = APIRouter()
+router = APIRouter(
+    tags=["Menús"]
+)
 
-def obtener_rol_desde_token(authorization: str = Header(...)):
+@router.get(
+    "/por-rol",
+    summary="Obtener menús según el rol activo del usuario autenticado",
+    response_description="Objeto con lista de menús y nombre del rol"
+)
+def obtener_menus(usuario=Depends(obtener_usuario_desde_token)):
+    """
+    Retorna los menús disponibles para el rol activo del usuario autenticado.
+    Incluye el nombre del rol para mostrar en el frontend.
+    """
     try:
-        token = authorization.replace("Bearer ", "")
-        payload = decode_token(token)
-        return payload.get("rol_id")
-    except Exception:
-        raise HTTPException(status_code=401, detail="Token inválido")
+        rol_id = usuario["rol_id"]
+        # Listar menús activos
+        menus = listar_menus_por_rol(rol_id)
 
-@router.get("/por-rol")
-def obtener_menus(rol_id: int = Depends(obtener_rol_desde_token)):
-    return listar_menus_por_rol(rol_id)
+        # Obtener nombre del rol desde la lista de roles
+        roles = listar_roles()
+        rol_info = next((r for r in roles if r.get("rol_id") == rol_id), None)
+        rol_name = rol_info.get("rol_name") if rol_info else ""
+
+        return JSONResponse(content={
+            "menus": menus,
+            "rol_name": rol_name
+        })
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error al obtener menús: {str(e)}")
+

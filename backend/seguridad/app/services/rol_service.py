@@ -23,7 +23,7 @@ def crear_rol(data):
         # Insertar permisos (menús permitidos)
         for men_id in data.menus:
             cur.execute("""
-                INSERT INTO ceragen.segu_menu_rol (merol_rol_id, merol_menu_id)
+                INSERT INTO ceragen.segu_menu_rol (mr_rol_id, mr_menu_id)
                 VALUES (%s, %s)
             """, (rol_id, men_id))
 
@@ -39,10 +39,10 @@ def listar_roles():
 
     cur.execute("""
         SELECT r.rol_id, r.rol_name, r.rol_description, r.rol_state,
-               ARRAY_AGG(m.men_name) as menus
+               ARRAY_AGG(m.menu_name) as menus
         FROM ceragen.segu_rol r
-        LEFT JOIN ceragen.segu_menu_rol mr ON r.rol_id = mr.merol_rol_id
-        LEFT JOIN ceragen.segu_menu m ON mr.merol_menu_id = m.men_id
+        LEFT JOIN ceragen.segu_menu_rol mr ON r.rol_id = mr.mr_rol_id
+        LEFT JOIN ceragen.segu_menu m ON mr.mr_menu_id = m.menu_id
         GROUP BY r.rol_id
     """)
     rows = cur.fetchall()

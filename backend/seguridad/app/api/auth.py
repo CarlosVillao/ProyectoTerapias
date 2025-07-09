@@ -2,7 +2,7 @@ from fastapi import APIRouter, Form, HTTPException, status
 from app.db.connection import get_connection
 from app.config import settings
 import bcrypt
-import jwt
+from jose import jwt
 
 router = APIRouter(prefix="/auth", tags=["Autenticación"])
 

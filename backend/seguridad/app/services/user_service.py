@@ -76,12 +76,12 @@ def listar_usuarios():
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
     cur.execute("""
-        SELECT u.usu_id, u.usu_email, u.usu_state, 
+        SELECT u.user_id, u.user_mail, u.user_state, 
                ARRAY_AGG(r.rol_name) as roles
         FROM ceragen.segu_user u
-        LEFT JOIN ceragen.segu_user_rol ur ON u.usu_id = ur.usro_user_id
-        LEFT JOIN ceragen.segu_rol r ON ur.usro_rol_id = r.rol_id
-        GROUP BY u.usu_id
+        LEFT JOIN ceragen.segu_user_rol ur ON u.user_id = ur.id_user
+        LEFT JOIN ceragen.segu_rol r ON ur.id_user_rol = r.rol_id
+        GROUP BY u.user_id
     """)
     rows = cur.fetchall()
     conn.close()

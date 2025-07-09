@@ -1,20 +1,19 @@
 # app/utils/auth_dependency.py
 
-from fastapi import Header, HTTPException
+from fastapi import Depends, HTTPException
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from app.utils.jwt_handler import decode_token
 
-def obtener_usuario_desde_token(authorization: str = Header(...)):
-    """
-    Extrae y decodifica el token JWT enviado en el encabezado Authorization.
-    Valida su estructura y contenido (user_id y rol_id).
-    """
-    if not authorization or not authorization.startswith("Bearer "):
-        raise HTTPException(status_code=401, detail="Encabezado de autorización malformado o faltante")
-    
-    token = authorization.split(" ")[1]
+# Definir el esquema de seguridad tipo Bearer para Swagger y dependencias
+bearer_scheme = HTTPBearer(auto_error=True)
 
+def obtener_usuario_desde_token(credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme)):
+    """
+    Extrae el usuario autenticado desde el token JWT proporcionado en el encabezado Authorization.
+    """
     try:
-        payload = decode_token(token)
+        token = credentials.credentials  # Extrae el token del encabezado
+        payload = decode_token(token)    # Decodifica el token JWT
     except Exception as e:
         raise HTTPException(status_code=401, detail=f"Token inválido: {str(e)}")
 

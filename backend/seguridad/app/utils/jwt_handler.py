@@ -5,14 +5,16 @@ from jose import jwt, JWTError
 from fastapi import HTTPException
 from app.config.settings import settings
 
-# Asegúrate de definir esto en settings.py si no existe
-JWT_ALGORITHM = "HS256"  # puedes mover esto a settings si lo deseas
+# Algoritmo y secreto
+JWT_ALGORITHM = "HS256"
 
-def create_access_token(data: dict, expires_delta: timedelta = timedelta(hours=8)):
+def create_access_token(data: dict, expires_delta: timedelta = timedelta(hours=8)) -> str:
+    """
+    Crea un JWT con payload `data` y expiración `expires_delta`.
+    """
     to_encode = data.copy()
     expire = datetime.utcnow() + expires_delta
     to_encode.update({"exp": expire})
-
     encoded_jwt = jwt.encode(
         to_encode,
         settings.JWT_SECRET,
@@ -20,12 +22,16 @@ def create_access_token(data: dict, expires_delta: timedelta = timedelta(hours=8
     )
     return encoded_jwt
 
-def decode_token(token: str):
+def decode_token(token: str) -> dict:
+    """
+    Decodifica y verifica un JWT. Lanza HTTPException(401) si falla.
+    """
     try:
-        return jwt.decode(
+        payload = jwt.decode(
             token,
             settings.JWT_SECRET,
             algorithms=[JWT_ALGORITHM]
         )
-    except JWTError:
+        return payload
+    except JWTError as e:
         raise HTTPException(status_code=401, detail="Token inválido o expirado")
