@@ -1,17 +1,17 @@
 services:
-  db:
-    image: postgres:16
-    container_name: postgres_db
-    restart: always
-    environment:
-      POSTGRES_DB: ws_ceragen
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: desarrollo123
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./database:/database
+  #db:
+   # image: postgres:16
+    #container_name: postgres_db
+    #restart: always
+    #environment:
+      #POSTGRES_DB: ws_ceragen
+      #POSTGRES_USER: postgres
+      #POSTGRES_PASSWORD: desarrollo123
+    #ports:
+     # - "5432:5432"
+    #volumes:
+      #- postgres_data:/var/lib/postgresql/data
+      #- ./database:/database
 
   administracion:
     build:
@@ -21,8 +21,8 @@ services:
       - ./backend/administracion/.env
     ports:
       - "8001:8000"
-    depends_on:
-      - db
+    #depends_on:
+      #- db
 
   seguridad:
     build:
@@ -32,8 +32,8 @@ services:
       - ./backend/seguridad/.env
     ports:
       - "8000:8000"
-    depends_on:
-      - db
+    #depends_on:
+      #- db
 
   frontend:
     build:
