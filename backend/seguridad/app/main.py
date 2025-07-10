@@ -9,7 +9,8 @@ app = FastAPI(
 
 # Orígenes permitidos para CORS (frontend)
 origins = [
-    "http://localhost:3000",
+    "http://localhost",
+    "http://localhost:80",
     # "http://tu-dominio.com",
     # agrega aquí otros dominios si los necesitas
 ]

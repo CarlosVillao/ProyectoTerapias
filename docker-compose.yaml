@@ -23,6 +23,9 @@ services:
       - "8001:8000"
     #depends_on:
       #- db
+    networks:
+      - app-net
+
 
   seguridad:
     build:
@@ -34,6 +37,8 @@ services:
       - "8000:8000"
     #depends_on:
       #- db
+    networks:
+      - app-net
 
   frontend:
     build:
@@ -44,6 +49,15 @@ services:
     depends_on:
       - administracion
       - seguridad
+    environment:
+      - REACT_APP_API_URL=http://seguridad:8000
+    networks:
+      - app-net
 
 volumes:
   postgres_data:
+
+networks:
+  app-net:
+    driver: bridge
+

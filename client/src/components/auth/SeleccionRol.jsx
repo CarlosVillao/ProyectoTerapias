@@ -8,21 +8,27 @@ const SeleccionRol = ({ userId, roles, onRolSeleccionado }) => {
     e.preventDefault();
     setError("");
 
+    const API_BASE = process.env.REACT_APP_API_URL || "http://localhost:8000";
+
+    if (!userId || !rolId) {
+      setError("Faltan datos para seleccionar el rol");
+      return;
+    }
+
     try {
-      const response = await fetch("http://127.0.0.1:8000/auth/seleccionar-rol", {
+      const API_BASE = process.env.REACT_APP_API_URL || "http://localhost:8000";
+
+      const response = await fetch(`${API_BASE}/auth/seleccionar-rol`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          user_id: userId,
-          rol_id: parseInt(rolId),
-        }),
+        body: JSON.stringify({ user_id: userId, rol_id: parseInt(rolId) }),
       });
+      
 
       if (!response.ok) throw new Error("No se pudo seleccionar el rol");
       const data = await response.json();
 
-      localStorage.setItem("rol_id", rolId); // guardar también el rol
-      
+      localStorage.setItem("rol_id", rolId);
       onRolSeleccionado(data.token, data.login_id);
     } catch (err) {
       console.error(err);
