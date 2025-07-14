@@ -1,0 +1,55 @@
+### Listar historiales médicos de pacientes
+GET http://localhost:8001/patients
+
+### Crear historial médico de paciente
+POST http://localhost:8001/patients
+Content-Type: application/json
+
+{
+  "patient_id": 1,
+  "primary_complaint": "Dolor en la rodilla derecha",
+  "onset_date": "2024-01-15T10:00:00",
+  "related_trauma": true,
+  "current_treatment": "Fisioterapia y antiinflamatorios",
+  "notes": "Paciente refiere dolor desde hace 2 semanas",
+  "user_created": "admin",
+  "date_created": "2024-01-15T10:00:00"
+}
+
+### Obtener historial médico por ID
+GET http://localhost:8001/patients/1
+
+### Obtener alergias de un paciente
+GET http://localhost:8001/patients/1/allergies
+
+### Obtener enfermedades de un paciente
+GET http://localhost:8001/patients/1/diseases
+
+### Listar controles de sesiones
+GET http://localhost:8001/sessions
+
+### Crear control de sesión
+POST http://localhost:8001/sessions
+Content-Type: application/json
+
+{
+  "invoice_id": 1,
+  "product_id": 1,
+  "session_number": 1,
+  "scheduled_date": "2024-01-20T14:00:00",
+  "therapy_type_id": 1,
+  "medical_staff_id": 1,
+  "consumed": false,
+  "state": true,
+  "user_created": "admin",
+  "date_created": "2024-01-15T10:00:00"
+}
+
+### Obtener control de sesión por ID
+GET http://localhost:8001/sessions/1
+
+### Obtener sesiones de un paciente específico
+GET http://localhost:8001/sessions/patient/1
+
+### Actualizar estado de sesión (marcar como consumida)
+PATCH http://localhost:8001/sessions/1/status?consumed=true&execution_date=2024-01-20T14:30:00

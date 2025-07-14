@@ -34,4 +34,4 @@ async def get_current_user(
     if resp.status_code != 200:
         raise HTTPException(status_code=401, detail="Invalid token")   
     # Retorna datos del usuario proporcionados por el servicio de seguridad
-    return response_data
+    return response_data["user"]

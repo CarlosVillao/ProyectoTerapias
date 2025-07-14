@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.env
+env/
+venv/
+
+# Node.js/React
+node_modules/
+build/
+dist/
+npm-debug.log
+
+# Docker
+*.log
+
+# General
+.DS_Store
+
+# node
+/node_modules
+
+# pycache
+__pycache__/

@@ -11,6 +11,7 @@ class Settings(BaseSettings):
     DB_USER: str
     DB_PASSWORD: str
 
+    # Debe ser IGUAL en todos los microservicios y estar definido en el .env
     JWT_SECRET: str
     JWT_ALGORITHM: str = "HS256"
 

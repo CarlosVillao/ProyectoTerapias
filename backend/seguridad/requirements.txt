@@ -1,8 +1,8 @@
 fastapi
 uvicorn
-python-dotenv
 psycopg2-binary
-passlib[bcrypt]
+python-dotenv
+passlib
+bcrypt>=3.1.0,<4.0.0
 python-jose
-pydantic[email]
-pydantic-settings
+PyJWT
