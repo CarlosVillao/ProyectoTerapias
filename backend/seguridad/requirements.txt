@@ -1,3 +1,5 @@
+pydantic-settings
+email_validator
 fastapi
 uvicorn
 psycopg2-binary
