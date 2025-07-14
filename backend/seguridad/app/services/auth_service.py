@@ -43,6 +43,8 @@ def login_user(email: str, password: str):
             "roles": [dict(rol) for rol in roles]
         }
 
+    except HTTPException as e:
+        raise e
     except Exception as e:
         print(f"❌ Error en login_user: {str(e)}")
         raise HTTPException(status_code=500, detail="Error en autenticación")
@@ -62,7 +64,8 @@ def seleccionar_rol_activo(user_id: int, rol_id: int, origin_ip: str, host_name:
                 slo_user_id, slo_token, slo_origin_ip, slo_host_name, slo_date_start_connection
             ) VALUES (%s, '', %s, %s, now()) RETURNING slo_id
         """, (user_id, origin_ip, host_name))
-        login_id = cur.fetchone()[0]
+        row = cur.fetchone()
+        login_id = row[0] if row else None
 
         token = create_access_token({"user_id": user_id, "rol_id": rol_id, "login_id": login_id})
 
@@ -121,9 +124,9 @@ def enviar_codigo_recuperacion(email: str):
         token = str(random.randint(100000, 999999))
         cur.execute("""
             INSERT INTO ceragen.segu_user_notification (
-                usno_user_id, usno_type, usno_message, usno_state, usno_created_at
-            ) VALUES (%s, 'RECUPERACION', %s, true, now())
-        """, (user["user_id"], token))
+                sun_user_destination_id, sun_user_source_id, sun_title_notification, sun_text_notification, sun_state_notification, sun_date_notification, sun_isread_notification
+            ) VALUES (%s, %s, 'Recuperación de contraseña', %s, true, now(), false)
+        """, (user["user_id"], user["user_id"], token))
 
         conn.commit()
         return {"message": f"Código de recuperación generado: {token} (modo prueba)"}
@@ -148,10 +151,9 @@ def resetear_contrasena(email: str, token: str, new_password: str):
             raise HTTPException(status_code=404, detail="Usuario no encontrado")
 
         cur.execute("""
-            SELECT usno_id FROM ceragen.segu_user_notification
-            WHERE usno_user_id = %s AND usno_type = 'RECUPERACION' AND usno_message = %s
-              AND usno_state = true
-            ORDER BY usno_created_at DESC LIMIT 1
+            SELECT sun_id FROM ceragen.segu_user_notification
+            WHERE sun_user_destination_id = %s AND sun_text_notification = %s AND sun_state_notification = true
+            ORDER BY sun_date_notification DESC LIMIT 1
         """, (user["user_id"], token))
         valid = cur.fetchone()
 
@@ -161,7 +163,7 @@ def resetear_contrasena(email: str, token: str, new_password: str):
         new_hash = hash_password(new_password)
         cur.execute("UPDATE ceragen.segu_user SET user_password = %s WHERE user_id = %s", (new_hash, user["user_id"]))
 
-        cur.execute("UPDATE ceragen.segu_user_notification SET usno_state = false WHERE usno_id = %s", (valid["usno_id"],))
+        cur.execute("UPDATE ceragen.segu_user_notification SET sun_state_notification = false WHERE sun_id = %s", (valid["sun_id"],))
         conn.commit()
 
         return {"message": "Contraseña restablecida correctamente"}
@@ -180,7 +182,7 @@ def cambiar_rol_activo(login_id: int, user_id: int, new_rol_id: int, ip: str, ho
 
     try:
         cur.execute("""
-            SELECT 1 FROM ceragen.segu_user_rol 
+            SELECT 1 FROM ceragen.segu_user_rol
             WHERE id_user = %s AND id_rol = %s
         """, (user_id, new_rol_id))
         if not cur.fetchone():

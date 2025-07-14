@@ -5,11 +5,16 @@ def get_all_marital_statuses() -> list[dict]:
     try:
         cur = conn.cursor()
         cur.execute("""
-            SELECT 
-              id AS id, status_name AS status_name, state,
-              user_created, date_created,
-              user_modified, date_modified,
-              user_deleted, date_deleted
+            SELECT
+              id AS mst_id,
+              status_name AS mst_name,
+              state,
+              user_created,
+              date_created,
+              user_modified,
+              date_modified,
+              user_deleted,
+              date_deleted
             FROM ceragen.admin_marital_status
             ORDER BY id;
         """)
@@ -24,11 +29,16 @@ def get_marital_status(ms_id: int) -> dict | None:
     try:
         cur = conn.cursor()
         cur.execute("""
-            SELECT 
-              id AS id, status_name AS status_name, state,
-              user_created, date_created,
-              user_modified, date_modified,
-              user_deleted, date_deleted
+            SELECT
+              id AS mst_id,
+              status_name AS mst_name,
+              state,
+              user_created,
+              date_created,
+              user_modified,
+              date_modified,
+              user_deleted,
+              date_deleted
             FROM ceragen.admin_marital_status
             WHERE id = %s;
         """, (ms_id,))

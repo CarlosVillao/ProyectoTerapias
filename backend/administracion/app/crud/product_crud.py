@@ -1,3 +1,27 @@
+def update_product(pro_id: int, data: dict) -> dict | None:
+    conn = get_connection()
+    try:
+        cur = conn.cursor()
+        set_clause = ', '.join([f"{k} = %s" for k in data.keys()])
+        values = list(data.values()) + [pro_id]
+        cur.execute(f"""
+            UPDATE ceragen.admin_product SET {set_clause} WHERE pro_id = %s RETURNING pro_id;
+        """, values)
+        updated = cur.fetchone()
+        conn.commit()
+        return {'pro_id': updated[0]} if updated else None
+    finally:
+        conn.close()
+
+def delete_product(pro_id: int) -> bool:
+    conn = get_connection()
+    try:
+        cur = conn.cursor()
+        cur.execute("DELETE FROM ceragen.admin_product WHERE pro_id = %s;", (pro_id,))
+        conn.commit()
+        return cur.rowcount > 0
+    finally:
+        conn.close()
 from app.db.database import get_connection
 from app.schemas.product_schema import ProductCreate
 from datetime import datetime

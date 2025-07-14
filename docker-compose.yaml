@@ -1,17 +1,17 @@
 services:
-  #db:
-   # image: postgres:16
-    #container_name: postgres_db
-    #restart: always
-    #environment:
-      #POSTGRES_DB: ws_ceragen
-      #POSTGRES_USER: postgres
-      #POSTGRES_PASSWORD: desarrollo123
-    #ports:
-     # - "5432:5432"
-    #volumes:
-      #- postgres_data:/var/lib/postgresql/data
-      #- ./database:/database
+  db:
+    image: postgres:16
+    container_name: postgres_db
+    restart: always
+    environment:
+      POSTGRES_DB: ws_ceragen
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: desarrollo123
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database:/database
 
   administracion:
     build:
@@ -20,12 +20,24 @@ services:
     env_file:
       - ./backend/administracion/.env
     ports:
-      - "8001:8000"
-    #depends_on:
-      #- db
+      - '8000:8000'
+    depends_on:
+      - db
     networks:
       - app-net
 
+  pacientes:
+    build:
+      context: ./backend/pacientes
+    container_name: pacientes
+    env_file:
+      - ./backend/pacientes/.env
+    ports:
+      - '8001:8000'
+    depends_on:
+      - db
+    networks:
+      - app-net
 
   seguridad:
     build:
@@ -34,23 +46,27 @@ services:
     env_file:
       - ./backend/seguridad/.env
     ports:
-      - "8000:8000"
-    #depends_on:
-      #- db
+      - '8002:8000'
+    depends_on:
+      - db
     networks:
       - app-net
 
   frontend:
     build:
-      context: ./frontend/terapias-app
+      context: ./client/
     container_name: frontend
     ports:
-      - "80:80"
+      - '80:80'
     depends_on:
       - administracion
       - seguridad
     environment:
-      - REACT_APP_API_URL=http://seguridad:8000
+      - ADMINISTRACION_SERVICE_URL=http://administracion:8000
+      - PACIENTES_SERVICE_URL=http://pacientes:8001
+      - SECURITY_SERVICE_URL=http://localhost:8002
+      - JWT_SECRET_KEY=clave_super_segura
+      - JWT_ALGORITHM=HS256
     networks:
       - app-net
 
@@ -60,4 +76,3 @@ volumes:
 networks:
   app-net:
     driver: bridge
-

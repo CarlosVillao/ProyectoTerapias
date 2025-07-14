@@ -3,17 +3,17 @@ from datetime import datetime
 from typing import Optional
 
 class GenreBase(BaseModel):
-    genre_name: str = Field(..., max_length=100)
-    state: Optional[bool] = True
+    gen_name: str = Field(..., max_length=40)
+    gen_description: Optional[str] = Field(None, max_length=100)
+
+class GenreCreate(GenreBase):
+    user_created: str
+    date_created: Optional[datetime] = None
 
 class GenreRead(GenreBase):
-    id: int
-    user_created: str
+    gen_id: int
     date_created: datetime
-    user_modified: Optional[str]
-    date_modified: Optional[datetime]
-    user_deleted: Optional[str]
-    date_deleted: Optional[datetime]
+    user_created: str
 
     class Config:
-        orm_mode = True
+        from_attributes = True

@@ -24,6 +24,33 @@ def get_expenses(skip: int = 0, limit: int = 100) -> list[dict]:
     finally:
         conn.close()
 
+def get_expense(exp_id: int) -> dict | None:
+    """
+    Recupera un gasto por su exp_id.
+    Devuelve un dict con todos los campos o None si no existe.
+    """
+    conn = get_connection()
+    try:
+        cur = conn.cursor()
+        cur.execute(
+            """
+            SELECT
+              exp_id, exp_type_id, exp_payment_method_id,
+              exp_date, exp_amount, exp_description,
+              user_created, date_created
+            FROM ceragen.admin_expense
+            WHERE exp_id = %s;
+            """,
+            (exp_id,)
+        )
+        row = cur.fetchone()
+        if not row:
+            return None
+        cols = [desc[0] for desc in cur.description]
+        return dict(zip(cols, row))
+    finally:
+        conn.close()
+
 def create_expense(data: ExpenseCreate) -> dict:
     conn = get_connection()
     try:

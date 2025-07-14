@@ -21,15 +21,25 @@ print("📌 auth_routes.py: router inicializado")
 
 
 @router.post("/login")
-def login(data: LoginRequest):
+def login(data: LoginRequest, request: Request):
     try:
-        print("🔐 Dentro de router-login")
         result = login_user(data.email, data.password)
         print("✅ Resultado login_user:", result)
+        # Select first role for initial login
+        first_role = result["roles"][0]
+        user_id = result["user"]["user_id"]
+        rol_id = first_role["rol_id"]
+        # Generate JWT and login_id
+        from app.services.auth_service import seleccionar_rol_activo
+        ip = request.client.host if request.client else "unknown"
+        host = request.headers.get("host", "unknown")
+        token, login_id = seleccionar_rol_activo(user_id, rol_id, ip, host)
         return {
-            "user_id": result["user"]["user_id"],
-            "email": result["user"]["user_mail"],
-            "roles": result["roles"]
+            "token": token,
+            "user_id": user_id,
+            "rol_id": rol_id,
+            "login_id": login_id,
+            "message": "Login exitoso"
         }
     except HTTPException as e:
         print("❌ Error HTTP en login:", str(e.detail))
@@ -42,7 +52,7 @@ def login(data: LoginRequest):
 @router.post("/seleccionar-rol", response_model=LoginResponse)
 def seleccionar_rol(data: RoleSelectionRequest, request: Request):
     try:
-        ip = request.client.host
+        ip = request.client.host if request.client else "unknown"
         host = request.headers.get("host", "unknown")
         token, login_id = seleccionar_rol_activo(data.user_id, data.rol_id, ip, host)
         return LoginResponse(
@@ -53,7 +63,6 @@ def seleccionar_rol(data: RoleSelectionRequest, request: Request):
             message="Inicio de sesión exitoso"
         )
     except Exception as e:
-        print("❌ Error al seleccionar rol:", str(e))
         raise HTTPException(status_code=500, detail="Error al seleccionar rol")
 
 
@@ -87,7 +96,7 @@ def resetear_password(data: PasswordResetRequest):
 @router.post("/cambiar-rol-activo")
 def cambiar_rol(data: ChangeActiveRoleRequest, request: Request):
     try:
-        ip = request.client.host
+        ip = request.client.host if request.client else "unknown"
         host = request.headers.get("host", "unknown")
         result = cambiar_rol_activo(
             login_id=data.login_id,

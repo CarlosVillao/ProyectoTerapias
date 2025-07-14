@@ -1,0 +1,9 @@
+# Simple .dockerignore for React/Vite frontend
+node_modules
+dist
+.git
+.gitignore
+Dockerfile
+README.md
+.env
+*.log

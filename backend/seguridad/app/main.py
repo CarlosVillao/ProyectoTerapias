@@ -11,8 +11,8 @@ app = FastAPI(
 origins = [
     "http://localhost",
     "http://localhost:80",
-    # "http://tu-dominio.com",
-    # agrega aquí otros dominios si los necesitas
+    "http://localhost:8000",
+    "http://localhost:5173",
 ]
 
 # CORS Middleware (para permitir conexiones desde frontend u otras APIs)
@@ -35,3 +35,17 @@ app.include_router(module_routes.router, prefix="/modulos", tags=["Módulos"])
 @app.get("/", tags=["Root"], summary="Estado del servicio")
 def root():
     return {"message": "Microservicio de Seguridad activo", "version": app.version}
+
+# Bloque de ejecución directa
+if __name__ == "__main__":
+    import uvicorn
+    print("🚀 Iniciando Microservicio de Seguridad...")
+    print("📖 Documentación disponible en: http://localhost:8000/docs")
+    print("🔍 ReDoc disponible en: http://localhost:8000/redoc")
+    uvicorn.run(
+        "app.main:app",
+        host="0.0.0.0",
+        port=8002,
+        reload=True,
+        log_level="info"
+    )
